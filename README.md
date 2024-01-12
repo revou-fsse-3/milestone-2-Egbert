@@ -30,5 +30,7 @@ export default {
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
 
 - Netlify [netlify](https://relaxed-dusk-03018f.netlify.app/)
+
+- Using this for running the code
 - npm install axios styled-components react-icons --save react-router-dom localforage match-sorter sort-by
 
