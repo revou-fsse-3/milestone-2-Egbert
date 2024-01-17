@@ -1,116 +1,47 @@
 // App.tsx
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import axios from 'axios';
-import WeatherInfo from './componets/WeatherInfo';
-import Loading from './componets/Loading';
-import SearchArea from './componets/SearchArea';
+import { SearchPage } from './pages/SearchPage';
+import InformationPage from './pages/InformationPage';
 
-interface WeatherDataProps {
-  name: string;
-  main: {
-    temp: number;
-    humidity: number;
-  };
-  sys: {
-    country: string;
-  };
-  weather: {
-    main: string;
-  }[];
-  wind: {
-    speed: number;
-  };
-}
-
-const App: React.FC = () => {
-  const api_key = "becf529db9e2c95f05c4e22d61cf8490";
-  const api_Endpoint = "https://api.openweathermap.org/data/2.5/";
-  const units = "metric";
-
-  const [weatherData, setWeatherData] = useState<WeatherDataProps | null>(null);
+const App = () => {
+  const [weatherData, setWeatherData] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchCurrentWeather = async (lat: number, lon: number) => {
-    const url = `${api_Endpoint}weather?lat=${lat}&lon=${lon}&appid=${api_key}&units=${units}`;
-    const response = await axios.get(url);
-    return response.data;
-  };
-
-  const fetchWeatherData = async (city: string) => {
-    try {
-      const url = `${api_Endpoint}weather?q=${city}&appid=${api_key}&units=${units}`;
-      const searchResponse = await axios.get(url);
-      const currentWeatherData: WeatherDataProps = searchResponse.data;
-      return currentWeatherData;
-    } catch (error) {
-      console.error("No Data Found");
-      throw error;
-    }
-  };
-
   const handleSearch = async (city: string) => {
     try {
-      setError(null)
-      const currentWeatherData = await fetchWeatherData(city);
-      setWeatherData(currentWeatherData);
+      setError(null);
       setIsLoading(true);
-    } catch (error: any) {
-      console.error("Error fetching weather data", error);
-      if (error.response && error.response.status === 404) {
-        setError("City not found. Please enter a valid city name.");
-      } else {
-        setError("An error occurred while fetching weather data. Please try again later.");
-      }
 
+      const apiKey = 'becf529db9e2c95f05c4e22d61cf8490';
+      const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
+
+      const response = await axios.get(apiUrl);
+      setWeatherData(response.data);
+    } catch (error: any) {
+      console.error('Error fetching weather data', error);
+      if (error.response && error.response.status === 404) {
+        setError('City not found. Please enter a valid city name.');
+      } else {
+        setError('An error occurred while fetching weather data. Please try again later.');
+      }
+    } finally {
       setIsLoading(false);
     }
   };
-
-  
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      const { latitude, longitude } = position.coords;
-      Promise.all([fetchCurrentWeather(latitude, longitude)]).then(
-        ([currentWeather]) => {
-          setWeatherData(currentWeather);
-          setIsLoading(true);
-        }
-      );
-    });
-  }, []);
 
   return (
     <Router>
       <Routes>
         <Route
           path="/"
-          element={
-            <div className="h-screen bg-gradient-to-bl from-sky-300 to-pink-300 flex items-center justify-center">
-              <div className="w-[500px] bg-white p-5 rounded-xl flex flex-col justify-around items-center bg-opacity-60 shadow-lg">
-                <SearchArea onSearch={handleSearch} />
-                {weatherData && isLoading ? (
-                  <div>
-                    <WeatherInfo
-                      name={weatherData.name}
-                      country={weatherData.sys.country}
-                      weather={weatherData.weather[0].main}
-                      temperature={weatherData.main.temp}
-                      humidity={weatherData.main.humidity}
-                      windSpeed={weatherData.wind.speed}
-                    />
-                  </div>
-                ) : (
-                  <>
-                  <Loading />
-                  {error && <p className="text-red-500 mt-2">{error}</p>}
-                  </>
-                )}
-              </div>
-            </div>
-          }
+          element={<SearchPage onSearch={handleSearch} />}
+        />
+        <Route
+          path="/information"
+          element={<InformationPage wheatherData={undefined} {...{ weatherData, isLoading, error }} />}
         />
       </Routes>
     </Router>
