@@ -101,7 +101,6 @@ const App: React.FC = () => {
                       humidity={weatherData.main.humidity}
                       windSpeed={weatherData.wind.speed}
                     />
-                    <Link to={`/details/${weatherData.name}`}>View More Details</Link>
                   </div>
                 ) : (
                   <>
