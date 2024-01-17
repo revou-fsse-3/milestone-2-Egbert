@@ -29,7 +29,7 @@ export default {
 - Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
 
-- Netlify [netlify](https://relaxed-dusk-03018f.netlify.app/)
+- Netlify [netlify](https://playful-flan-18e9fc.netlify.app/)
 
 - Using this for running the code
 - npm install axios styled-components react-icons --save react-router-dom localforage match-sorter sort-by
